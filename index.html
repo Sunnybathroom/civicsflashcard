@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>US Civics Flashcards</title>
+   <link href="style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+   <div class="container">
+     <h1>US Civics Flashcards</h1>
+     <!-- Message display element - now always present in layout -->
+     <div id="message-display" class="message"></div>
+
+
+     <div id="card" class="card">
+       <p id="flashcard-text">Click “Start / Restart” to begin the quiz!</p>
+       <p id="flashcard-answer" style="display: none;"></p>
+     </div>
+     <div class="controls">
+       <button onclick="startQuiz()">Start / Restart</button>
+       <button id="nextCardButton" onclick="showNextCard()">Next!</button>
+       <button id="revealAnswerButton" onclick="revealAnswer()">Show Answer</button>
+       <button id="markWrongButton" onclick="markAsWrong()">Mark as Wrong</button>
+       <button onclick="startWrongOnlyQuiz()">Review Marked Questions</button>
+     </div>
+
+
+     <!-- Progress Bar Section -->
+     <div class="progress-section">
+         <div class="progress-bar-container">
+             <div id="progress-bar-fill" class="progress-bar-fill"></div>
+         </div>
+         <div id="progress-text" class="progress-text">0%</div>
+     </div>
+   </div>
+
+
+   <script src="script.js"></script>
+  </body>
+  </html>
