@@ -1,0 +1,196 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  font-family: 'Inter', sans-serif; /* Changed to Inter as per instructions */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f2f5; /* Light grey background */
+  padding: 20px; /* Add padding for small screens */
+  box-sizing: border-box; /* Include padding in element's total width and height */
+}
+
+.container {
+  text-align: center;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 15px; /* Slightly more rounded */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Stronger shadow */
+  max-width: 500px; /* Adjusted max-width for better balance */
+  width: 100%; /* Ensure it takes full width on small screens */
+  display: flex; /* Use flexbox for internal layout */
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Center items horizontally */
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 25px;
+  font-size: 1.8em; /* Adjusted font size */
+}
+
+/* Message display styling */
+.message {
+    padding: 10px;
+    margin-bottom: 15px; /* Margin below message */
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+    background-color: #e0f7fa; /* Light blue for info */
+    border: 1px solid #b2ebf2;
+    width: 100%; /* Ensure it takes full width */
+    box-sizing: border-box; /* Include padding in width */
+
+    /* NEW: Fixed height and visibility control */
+    min-height: 45px; /* Adjust this height based on your typical message length */
+    opacity: 0; /* Initially hidden */
+    visibility: hidden; /* Keeps space but makes it unclickable */
+    transition: opacity 0.5s ease-in-out; /* Smooth fade effect */
+    display: flex; /* Use flex to center text vertically */
+    align-items: center;
+    justify-content: center;
+}
+.message.success {
+    background-color: #e8f5e9; /* Light green for success */
+    border-color: #c8e6c9;
+    color: #2e7d32;
+}
+.message.error {
+    background-color: #ffebee; /* Light red for error */
+    border-color: #ffcdd2;
+    color: #c62828;
+}
+
+
+.card {
+  background-color: #eef; /* Lighter background for card */
+  border: 1px solid #ddd;
+  border-radius: 12px; /* More rounded corners */
+  padding: 30px;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 25px; /* Adjusted margin */
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05); /* Subtle inner shadow */
+  width: 100%; /* Ensure it takes full width */
+  box-sizing: border-box;
+}
+
+#flashcard-text {
+  font-size: 1.4em; /* Adjusted font size */
+  font-weight: bold;
+  color: #555;
+  margin: 0 0 15px 0; /* Adjust margin */
+  text-align: center;
+}
+
+#flashcard-answer {
+  font-size: 1.2em;
+  color: #007bff; /* Blue color for answer */
+  margin: 0;
+  text-align: center;
+  font-style: italic;
+}
+
+.controls {
+  margin-top: 20px;
+  margin-bottom: 25px; /* Added margin below controls before progress bar */
+  display: flex;
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  justify-content: center;
+  gap: 10px; /* Space between buttons */
+  width: 100%; /* Ensure controls take full width */
+}
+
+button {
+  padding: 12px 20px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px; /* More rounded buttons */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+  background-color: #007bff; /* Primary button color */
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2); /* Subtle shadow */
+}
+
+button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: translateY(-2px); /* Slight lift effect */
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: translateY(0);
+}
+
+/* Specific style for "Mark as Wrong" button */
+button[onclick="markAsWrong()"] {
+  background-color: #dc3545; /* Red for wrong */
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+}
+
+button[onclick="markAsWrong()"]:hover {
+  background-color: #c82333;
+  box-shadow: 0 6px 12px rgba(220, 53, 69, 0.3);
+}
+
+/* Specific style for "Review Marked Questions" button */
+button[onclick="startWrongOnlyQuiz()"] {
+  background-color: #ffc107; /* Yellow for review */
+  color: #333;
+  box-shadow: 0 4px 8px rgba(255, 193, 7, 0.2);
+}
+
+button[onclick="startWrongOnlyQuiz()"]:hover {
+  background-color: #e0a800;
+  box-shadow: 0 6px 12px rgba(255, 193, 7, 0.3);
+}
+
+/* Progress Bar Styling */
+.progress-section {
+    width: 100%;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 20px;
+    background-color: #e0f2f7; /* Light blue for the empty part */
+    border-radius: 10px;
+    overflow: hidden; /* Ensures the fill stays within the rounded corners */
+    margin-bottom: 10px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0%; /* Initial width, controlled by JS */
+    background-color: #007bff; /* Dark blue for the filled part */
+    border-radius: 10px; /* Match container radius */
+    transition: width 0.4s ease-in-out; /* Smooth transition for progress */
+}
+
+.progress-text {
+    font-size: 1em;
+    color: #555;
+    font-weight: bold;
+}
+
+/* Responsive adjustments for buttons */
+@media (max-width: 480px) {
+    .controls button {
+        width: calc(100% - 20px); /* Full width minus gap */
+        margin: 5px 0; /* Adjust margin for stacking */
+    }
+}
