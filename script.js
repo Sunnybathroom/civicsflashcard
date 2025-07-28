@@ -100,6 +100,11 @@ const flashcards = [
    { question: "What is the name of the national anthem?", answer: "The Star-Spangled Banner" }
 ];
 
+let quizStartTime = 0;
+let cardDisplayTime = 0; // To track time spent on each flashcard
+let totalQuizTime = 0; // Accumulate time spent in the quiz
+let reviewStartTime = 0; // <-- ADD THIS ONE HERE for GA4 review session tracking
+
 let shuffledCards = [];
 let currentIndex = 0;
 let wrongCards = []; // Stores the actual flashcard objects
@@ -281,7 +286,6 @@ function clearMessage() {
     }
 }
 
-
 function startQuiz() {
     shuffledCards = shuffle(flashcards); // Use the new shuffle that returns a copy
     wrongCards = []; // Reset wrong cards when starting a new full quiz
@@ -291,6 +295,15 @@ function startQuiz() {
     displayCard(); // Display the first card (which will call updateProgressBar)
     // Updated message to inform about clearing wrong questions
     displayMessage("Starting new quiz! Your previously marked questions have been cleared.", 'info');
+
+   // Track 'quiz_started' event
+    gtag('event', 'quiz_started', {
+        'event_category': 'engagement',
+        'event_label': 'User started the civics quiz'
+    });
+    // Start a timer for 'Time on project/quiz' (details below)
+    quizStartTime = new Date().getTime(); // Initialize quiz start time
+   
 }
 
 function showNextCard() {
