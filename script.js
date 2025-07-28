@@ -103,7 +103,7 @@ const flashcards = [
 let quizStartTime = 0;
 let cardDisplayTime = 0; // To track time spent on each flashcard
 let totalQuizTime = 0; // Accumulate time spent in the quiz
-let reviewStartTime = 0; // <-- ADD THIS ONE HERE for GA4 review session tracking
+let reviewStartTime = 0; // For GA4 to review session tracking
 
 let shuffledCards = [];
 let currentIndex = 0;
@@ -273,6 +273,14 @@ function displayCard() {
 
     // Update progress bar after displaying a new card
     updateProgressBar();
+
+    // Track 'quiz_started' event
+    gtag('event', 'flashcard_view', {
+        'question_number': currentIndex + 1,
+        'question_text': currentCard.question, // The question text itself
+        'quiz_mode': quizMode, // 'all' or 'wrongOnly'
+        'event_category': 'content_view'
+    });
 }
 
 // NEW: Function to explicitly clear the message display
@@ -287,6 +295,10 @@ function clearMessage() {
 }
 
 function startQuiz() {
+    // If the user was previously in review mode and starts a new quiz, end the review session.
+    if (quizMode === 'wrongOnly' && reviewStartTime !== 0) {
+        endReviewSession();
+    }
     shuffledCards = shuffle(flashcards); // Use the new shuffle that returns a copy
     wrongCards = []; // Reset wrong cards when starting a new full quiz
     saveWrongCards(); // Clear wrong cards from localStorage too
@@ -295,20 +307,36 @@ function startQuiz() {
     displayCard(); // Display the first card (which will call updateProgressBar)
     // Updated message to inform about clearing wrong questions
     displayMessage("Starting new quiz! Your previously marked questions have been cleared.", 'info');
-
-   // Track 'quiz_started' event
-    gtag('event', 'quiz_started', {
-        'event_category': 'engagement',
-        'event_label': 'User started the civics quiz'
-    });
-    // Start a timer for 'Time on project/quiz' (details below)
-    quizStartTime = new Date().getTime(); // Initialize quiz start time
-   
 }
 
 function showNextCard() {
+   // Calculate time spent on the current card before moving to the next
+    const timeOnCard = (new Date().getTime() - cardDisplayTime) / 1000; // in seconds
+    gtag('event', 'time_on_flashcard', {
+        'question_number': currentIndex + 1, // Using currentIndex for the question number
+        'time_seconds': timeOnCard,
+        'quiz_mode': quizMode // Add parameter to distinguish between main quiz and review
+    });
+    cardDisplayTime = new Date().getTime(); // Reset timer for the next card as a new card will be displayed
     currentIndex++; // Advance to the next card
+    if (quizMode === 'all') { // If currently in the main quiz mode
+         if (currentIndex < shuffledCards.length) { // Check if there are more cards (Note: no -1 here as displayCard will handle the end state)
     displayCard(); // Display the card at the new index (which will call updateProgressBar)
+    } else {
+            // Main quiz completed
+            endQuiz(); // Call the function to handle quiz completion and timing
+            // Your existing `displayCard()` at the end will handle the "Well done!" message.
+            // We just need to ensure the endQuiz() GA4 event fires.
+        }
+    } else if (quizMode === 'wrongOnly') { // If currently in the 'review wrong cards' mode
+        if (currentIndex < wrongCards.length) { // Check if there are more wrong cards to review
+            displayCard(); // Display the next wrong card
+        } else {
+            // User has gone through all wrong cards in this review session
+            completeReviewOfAllWrongQuestions(); // Call the function for full wrong review completion
+            // Your `displayCard()` will show "You've reviewed all marked questions!" already.
+        }
+    }
 }
 
 function revealAnswer() {
@@ -321,7 +349,12 @@ function markAsWrong() {
     if (currentCard && !wrongCards.includes(currentCard)) {
         wrongCards.push(currentCard);
         saveWrongCards(); // Save to localStorage immediately after marking
-        displayMessage("Question marked for review!", 'info'); // Use custom message
+        displayMessage("Question marked for review!", 'info');
+        gtag('event', 'question_marked_wrong', {
+            'question_text': currentCard.question, // The full question text
+            'question_index_in_deck': currentIndex + 1, // Where they were when they marked it
+            'quiz_mode': quizMode
+        });// Use custom message
     } else if (!currentCard) {
         displayMessage("No card is currently displayed to mark as wrong.", 'error'); // Use custom message
     } else {
@@ -339,6 +372,16 @@ function startWrongOnlyQuiz() {
         clearMessage();
         return;
     }
+    // If we're entering review mode, and maybe coming from a main quiz session,
+    // ensure we log the start of the review and reset its timer.
+    reviewStartTime = new Date().getTime(); // Initialize review session timer
+
+    gtag('event', 'review_wrong_started', {
+        'event_category': 'engagement',
+        'event_label': 'User started reviewing wrong questions',
+        'wrong_questions_count_at_start': wrongCards.length,
+        'current_main_quiz_question_on_entry': (quizMode === 'all' && currentIndex < shuffledCards.length) ? currentIndex + 1 : 'N/A' // Context if switching from main quiz
+    });
 
     quizMode = 'wrongOnly';
     currentIndex = 0;
@@ -346,6 +389,43 @@ function startWrongOnlyQuiz() {
     wrongCards = shuffle(wrongCards); // Shuffle the loaded/marked wrong cards
     displayCard(); // Display the first wrong card (which will call updateProgressBar)
     displayMessage(`Starting review of ${wrongCards.length} marked questions!`, 'info');
+}
+
+function endQuiz() {
+    // Calculate total time in quiz
+    const totalTimeInQuiz = (new Date().getTime() - quizStartTime) / 1000; // in seconds
+    totalQuizTime = totalTimeInQuiz; // Store for later if needed (e.g., if you display it to the user)
+
+    gtag('event', 'quiz_completed', {
+        'total_quiz_time_seconds': totalTimeInQuiz,
+        'event_category': 'engagement',
+        'event_label': 'User completed the entire quiz'
+    });
+    // The visual "Well done!" message and button disabling is already handled by displayCard()
+    // when currentIndex exceeds shuffledCards.length.
+}
+
+function completeReviewOfAllWrongQuestions() {
+    // This function is called when the user reaches the end of the `wrongCards` array during review.
+    gtag('event', 'review_wrong_completed_all', {
+        'event_category': 'engagement',
+        'event_label': 'User reviewed all marked wrong questions',
+        'total_wrong_questions_reviewed': wrongCards.length // 'wrongCards.length' at the start of review session
+    });
+    // Also call endReviewSession() as this signifies an end to the review
+    endReviewSession();
+}
+
+function endReviewSession() {
+    if (reviewStartTime !== 0) { // Check if a review session was actually started
+        const timeInReview = (new Date().getTime() - reviewStartTime) / 1000; // in seconds
+        gtag('event', 'review_wrong_completed', {
+            'time_in_review_seconds': timeInReview,
+            'event_category': 'engagement',
+            'event_label': 'User completed reviewing wrong questions (general end)'
+        });
+        reviewStartTime = 0; // Reset the timer
+    }
 }
 
 // Initialize the quiz when the page loads
