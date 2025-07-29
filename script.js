@@ -20,7 +20,7 @@ const flashcards = [
    { question: "How many U.S. Senators are there?", answer: "One hundred (100)" },
    { question: "We elect a U.S. Senator for how many years?", answer: "Six (6)" },
    { question: "Who is one of your state’s U.S. Senators now?", answer: "Answers will vary. [Residents of the District of Columbia and U.S. territories should answer that D.C. (or the territory where the applicant lives) has no U.S. Senators.]" },
-   { question: "The House of Representatives has how many voting members?", answer: "Four hundred forty-five (445)" },
+   { question: "The House of Representatives has how many voting members?", answer: "Four hundred thirty-five (435)" },
    { question: "We elect a U.S. Representative for how many years?", answer: "Two (2)" },
    { question: "Name your U.S. Representative.", answer: "Answers will vary. [Residents of territories with nonvoting Delegates or Resident Commissioners may provide the name of that Delegate or Commissioner. Also acceptable is any statement that the territory has no (voting) Representatives in Congress.]" },
    { question: "Who does a U.S. Senator represent?", answer: "All people of the state" },
