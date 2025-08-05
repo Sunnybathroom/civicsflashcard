@@ -87,7 +87,7 @@ const flashcards = [
    { question: "What did Martin Luther King, Jr. do?", answer: "Fought for civil rights; worked for equality for all Americans" },
    { question: "What major event happened on September 11, 2001, in the United States?", answer: "Terrorists attacked the United States." },
    { question: "Name one American Indian tribe in the United States.", answer: "[For a complete list of federally recognized tribes, visit fns.usda.gov/snap/tribal-directory.] Cherokee; Navajo; Sioux; Chippewa; Choctaw; Pueblo; Apache; Iroquois; Creek; Blackfeet; Seminole; Cheyenne; Arawak; Shawnee; Mohegan; Huron; Oneida; Lakota; Crow; Teton; Hopi; Inuit" },
-   { question: "Name one of the longest rivers in the United States.", answer: "Missouri River; Mississippi River" },
+   { question: "Name one of the two longest rivers in the United States.", answer: "Missouri River; Mississippi River" },
    { question: "What ocean is on the West Coast of the United States?", answer: "Pacific Ocean" },
    { question: "What ocean is on the East Coast of the United States?", answer: "Atlantic Ocean" },
    { question: "Name one U.S. territory.", answer: "Puerto Rico; U.S. Virgin Islands; American Samoa; Northern Mariana Islands; Guam" },
