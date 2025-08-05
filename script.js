@@ -98,6 +98,8 @@ const flashcards = [
    { question: "Why does the flag have 13 stripes?", answer: "Because there were 13 original colonies; because the stripes represent the original colonies" },
    { question: "Why does the flag have 50 stars?", answer: "Because there is one star for each state; because each star represents a state; because there are 50 states" },
    { question: "What is the name of the national anthem?", answer: "The Star-Spangled Banner" }
+   { question: "The idea of self-government is in the first three words of the Constitution. What are these words?", answer: "We the people" }
+   { question: "When do we celebrate Independence Day?", answer: "July 4" }
 ];
 
 let quizStartTime = 0;
