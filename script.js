@@ -97,8 +97,8 @@ const flashcards = [
    { question: "Where is the Statue of Liberty?", answer: "New York (Harbor); Liberty Island. [Also acceptable are New Jersey, near New York City, and on the Hudson River.]" },
    { question: "Why does the flag have 13 stripes?", answer: "Because there were 13 original colonies; because the stripes represent the original colonies" },
    { question: "Why does the flag have 50 stars?", answer: "Because there is one star for each state; because each star represents a state; because there are 50 states" },
-   { question: "What is the name of the national anthem?", answer: "The Star-Spangled Banner" }
-   { question: "The idea of self-government is in the first three words of the Constitution. What are these words?", answer: "We the people" }
+   { question: "What is the name of the national anthem?", answer: "The Star-Spangled Banner" },
+   { question: "The idea of self-government is in the first three words of the Constitution. What are these words?", answer: "We the people" },
    { question: "When do we celebrate Independence Day?", answer: "July 4" }
 ];
 
@@ -120,6 +120,7 @@ const nextButton = document.querySelector('button[onclick="showNextCard()"]');
 const revealButton = document.querySelector('button[onclick="revealAnswer()"]');
 const markWrongButton = document.querySelector('button[onclick="markAsWrong()"]');
 const messageDisplayEl = document.getElementById('message-display');
+const startQuizButton = document.querySelector('button[onclick="startQuiz()"]');
 
 // Get references to progress bar elements
 const progressBarFillEl = document.getElementById('progress-bar-fill');
@@ -301,6 +302,8 @@ function startQuiz() {
     if (quizMode === 'wrongOnly' && reviewStartTime !== 0) {
         endReviewSession();
     }
+    quizStartTime = new Date().getTime();
+    cardDisplayTime = new Date().getTime(); // Initialize the timer for the first card
     shuffledCards = shuffle(flashcards); // Use the new shuffle that returns a copy
     wrongCards = []; // Reset wrong cards when starting a new full quiz
     saveWrongCards(); // Clear wrong cards from localStorage too
@@ -309,6 +312,10 @@ function startQuiz() {
     displayCard(); // Display the first card (which will call updateProgressBar)
     // Updated message to inform about clearing wrong questions
     displayMessage("Starting new quiz! Your previously marked questions have been cleared.", 'info');
+   // Enable all buttons when the quiz starts
+    nextButton.disabled = false;
+    revealButton.disabled = false;
+    markWrongButton.disabled = false;
 }
 
 function showNextCard() {
@@ -447,6 +454,12 @@ document.addEventListener('DOMContentLoaded', () => {
     revealButton.disabled = true;
     markWrongButton.disabled = true;
 
+   // NEW: Add event listener to the start button
+    if (startQuizButton) {
+        startQuizButton.addEventListener('click', startQuiz);
+    } else {
+        console.error("Start quiz button not found!");
+    }
     // Initialize progress bar on load
     updateProgressBar(); // This will set it to 0% initially
     // NEW: Ensure message display is initially hidden and takes up space
