@@ -116,16 +116,18 @@ let currentCard = null; // This will hold the flashcard object currently display
 // Get references to HTML elements
 const flashcardTextEl = document.getElementById('flashcard-text');
 const flashcardAnswerEl = document.getElementById('flashcard-answer');
-const nextButton = document.querySelector('button[onclick="showNextCard()"]');
-const revealButton = document.querySelector('button[onclick="revealAnswer()"]');
-const markWrongButton = document.querySelector('button[onclick="markAsWrong()"]');
 const messageDisplayEl = document.getElementById('message-display');
-const startQuizButton = document.querySelector('button[onclick="startQuiz()"]');
+
+// Get references to buttons by their new IDs
+const startQuizButton = document.getElementById('startQuizButton');
+const nextButton = document.getElementById('nextCardButton');
+const revealButton = document.getElementById('revealAnswerButton');
+const markWrongButton = document.getElementById('markWrongButton');
+const reviewButton = document.getElementById('reviewButton');
 
 // Get references to progress bar elements
 const progressBarFillEl = document.getElementById('progress-bar-fill');
 const progressTextEl = document.getElementById('progress-text');
-
 
 // --- Helper function to display messages instead of alert() ---
 function displayMessage(message, type = 'info') {
@@ -454,14 +456,22 @@ document.addEventListener('DOMContentLoaded', () => {
     revealButton.disabled = true;
     markWrongButton.disabled = true;
 
-   // NEW: Add event listener to the start button
+// Add event listeners to all buttons
     if (startQuizButton) {
         startQuizButton.addEventListener('click', startQuiz);
-    } else {
-        console.error("Start quiz button not found!");
     }
-    // Initialize progress bar on load
-    updateProgressBar(); // This will set it to 0% initially
-    // NEW: Ensure message display is initially hidden and takes up space
-    clearMessage(); // Call clearMessage to set initial visibility/opacity
+    if (nextButton) {
+        nextButton.addEventListener('click', showNextCard);
+    }
+    if (revealButton) {
+        revealButton.addEventListener('click', revealAnswer);
+    }
+    if (markWrongButton) {
+        markWrongButton.addEventListener('click', markAsWrong);
+    }
+    if (reviewButton) {
+        reviewButton.addEventListener('click', startWrongOnlyQuiz);
+    }
+
+    // ... (Your remaining initialization logic)
 });
