@@ -239,30 +239,34 @@ function displayCard() {
 
     // Handle end of quiz
     if (activeDeck.length === 0 || currentIndex >= activeDeck.length) {
-        flashcardTextEl.textContent = "Well done! You've reached the end of the quiz! Click 'Start / Restart' to begin again.";
+        if (quizMode === 'all') {
+            flashcardTextEl.textContent = "Congratulations! You’ve completed the quiz. Click Start Quiz to try again, or review the questions you missed.";
+        } else {
+            flashcardTextEl.textContent = "You've reviewed all marked questions! Click 'Start / Restart' for a new quiz.";
+        }
+        
         flashcardAnswerEl.style.display = 'none';
-        flashcardAnswerEl.textContent = ''; // Clear previous answer
-        currentCard = null; // No card is currently displayed
-        // Optionally disable buttons here
+        flashcardAnswerEl.textContent = '';
+        currentCard = null;
+
+        if (progressBarFillEl) progressBarFillEl.style.width = '100%';
+        if (progressTextEl) progressTextEl.textContent = '100% Complete!';
+        
         nextButton.disabled = true;
         revealButton.disabled = true;
         markWrongButton.disabled = true;
+        
+        // Clear any lingering temporary messages
+        clearMessage(); 
 
-        // Ensure progress bar shows 100% when quiz is completed
-        if (progressBarFillEl) progressBarFillEl.style.width = '100%';
-        if (progressTextEl) progressTextEl.textContent = '100% Complete!';
-
-        // If it's the end of the 'wrong only' quiz, give a specific message
-        if (quizMode === 'wrongOnly') {
-            displayMessage("You've reviewed all marked questions!", 'success');
+        if (quizMode === 'all') {
+            endQuiz();
         } else {
-            displayMessage("Quiz completed!", 'success');
+            completeReviewOfAllWrongQuestions();
         }
-        // NEW: Clear any active messages after quiz completion
-        clearMessage();
+
         return;
     }
-
     // Set the current card
     currentCard = activeDeck[currentIndex];
     flashcardTextEl.textContent = currentCard.question;
@@ -349,10 +353,9 @@ function showNextCard() {
          if (currentIndex < shuffledCards.length) { // Check if there are more cards (Note: no -1 here as displayCard will handle the end state)
     displayCard(); // Display the card at the new index (which will call updateProgressBar)
     } else {
-            // Main quiz completed
-            endQuiz(); // Call the function to handle quiz completion and timing
-            // Your existing `displayCard()` at the end will handle the "Well done!" message.
-            // We just need to ensure the endQuiz() GA4 event fires.
+            // Main quiz completed. Call displayCard() one last time
+            // to show the final message.
+            displayCard(); 
         }
     } else if (quizMode === 'wrongOnly') { // If currently in the 'review wrong cards' mode
         if (currentIndex < wrongCards.length) { // Check if there are more wrong cards to review
@@ -398,6 +401,10 @@ function startWrongOnlyQuiz() {
         clearMessage();
         return;
     }
+       // ADD THIS CODE HERE
+    nextButton.disabled = false;
+    revealButton.disabled = false;
+    markWrongButton.disabled = false;
     // If we're entering review mode, and maybe coming from a main quiz session,
     // ensure we log the start of the review and reset its timer.
     reviewStartTime = new Date().getTime(); // Initialize review session timer
