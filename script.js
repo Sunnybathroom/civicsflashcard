@@ -330,6 +330,21 @@ function showNextCard() {
     });
     cardDisplayTime = new Date().getTime(); // Reset timer for the next card as a new card will be displayed
     currentIndex++; // Advance to the next card
+   // ADD THE NEW GA4 TRACKING LOGIC HERE
+    if (quizMode === 'all') { // Only track progress for the main quiz
+        switch (currentIndex) {
+            case 10:
+            case 25:
+            case 50:
+            case 75:
+            case 100:
+                gtag('event', 'quiz_milestone', {
+                    'milestone_number': currentIndex
+                });
+                break;
+        }
+    }
+
     if (quizMode === 'all') { // If currently in the main quiz mode
          if (currentIndex < shuffledCards.length) { // Check if there are more cards (Note: no -1 here as displayCard will handle the end state)
     displayCard(); // Display the card at the new index (which will call updateProgressBar)
